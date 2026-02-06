@@ -1,0 +1,49 @@
+.git
+.worktrees
+.bun-cache
+.bun
+.tmp
+**/.tmp
+.DS_Store
+**/.DS_Store
+
+# Media
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
+*.mp4
+*.mov
+*.wav
+*.mp3
+
+# Dependencies (will be installed in builder stage)
+node_modules
+**/node_modules
+.pnpm-store
+**/.pnpm-store
+
+# Build caches
+.turbo
+**/.turbo
+.cache
+**/.cache
+.next
+**/.next
+coverage
+**/coverage
+*.log
+tmp
+**/tmp
+
+# Build artifacts (will be rebuilt)
+dist
+**/dist
+**/*.trace
+
+# Not needed for Docker build
+apps/
+vendor/
+packages/AlphaClaw/Dockerfile
+packages/AlphaClaw/docker-compose.yml

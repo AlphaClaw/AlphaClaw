@@ -19,6 +19,17 @@
     "oxlint": "^1.43.0",
     "oxlint-tsgolint": "^0.11.4"
   },
+  "trustedDependencies": [
+    "@lydell/node-pty",
+    "@matrix-org/matrix-sdk-crypto-nodejs",
+    "@napi-rs/canvas",
+    "@whiskeysockets/baileys",
+    "authenticate-pam",
+    "esbuild",
+    "node-llama-cpp",
+    "protobufjs",
+    "sharp"
+  ],
   "overrides": {
     "fast-xml-parser": "5.3.4",
     "form-data": "2.5.4",

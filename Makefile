@@ -1,0 +1,36 @@
+.PHONY: push version patch minor major
+
+VERSION_FILE := packages/AlphaClaw/package.json
+
+# Get current version from latest git tag (strips 'v' prefix)
+CURRENT_VERSION := $(shell git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "0.0.0")
+
+push:
+	git push origin main --tags
+
+# Version bump: make version <patch|minor|major>
+version:
+	@if [ -z "$(filter patch minor major,$(MAKECMDGOALS))" ]; then \
+		echo "Usage: make version <patch|minor|major>"; \
+		echo "Current version: $(CURRENT_VERSION)"; \
+		exit 1; \
+	fi
+
+patch minor major: version
+	@TYPE=$@ && \
+	echo "Current version: $(CURRENT_VERSION)" && \
+	NEW_VERSION=$$(echo "$(CURRENT_VERSION)" | awk -F. -v type="$$TYPE" '{ \
+		split($$3, parts, "-"); \
+		patch = parts[1]; \
+		if (index($$3, "-") > 0) { print $$1"."$$2"."patch } \
+		else if (type == "major") { print $$1+1".0.0" } \
+		else if (type == "minor") { print $$1"."$$2+1".0" } \
+		else { print $$1"."$$2"."$$3+1 } \
+	}') && \
+	echo "New version: $$NEW_VERSION" && \
+	sed -i '' 's/"version": ".*"/"version": "'$$NEW_VERSION'"/' $(VERSION_FILE) && \
+	git add $(VERSION_FILE) && \
+	git commit -m "chore: bump version to v$$NEW_VERSION" && \
+	git tag "v$$NEW_VERSION" && \
+	echo "Created tag v$$NEW_VERSION" && \
+	echo "Run 'make push' to push changes and trigger release"

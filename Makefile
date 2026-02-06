@@ -2,8 +2,8 @@
 
 VERSION_FILE := packages/AlphaClaw/package.json
 
-# Get current version from latest git tag (strips 'v' prefix)
-CURRENT_VERSION := $(shell git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "0.0.0")
+# Get current version from package.json
+CURRENT_VERSION := $(shell node -p "require('./$(VERSION_FILE)').version")
 
 push:
 	git push origin main --tags

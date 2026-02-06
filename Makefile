@@ -1,6 +1,6 @@
 .PHONY: push version patch minor major
 
-VERSION_FILE := packages/AlphaClaw/package.json
+VERSION_FILE := package.json
 
 # Get current version from package.json
 CURRENT_VERSION := $(shell node -p "require('./$(VERSION_FILE)').version")

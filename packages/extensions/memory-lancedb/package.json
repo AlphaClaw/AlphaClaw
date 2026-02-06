@@ -9,7 +9,7 @@
     "openai": "^6.17.0"
   },
   "devDependencies": {
-    "alphaclaw": "workspace:*"
+    "@alphaclaw/core": "workspace:*"
   },
   "alphaclaw": {
     "extensions": [

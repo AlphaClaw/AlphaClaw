@@ -4,7 +4,7 @@
   "description": "AlphaClaw Google Antigravity OAuth provider plugin",
   "type": "module",
   "devDependencies": {
-    "alphaclaw": "workspace:*"
+    "@alphaclaw/core": "workspace:*"
   },
   "alphaclaw": {
     "extensions": [

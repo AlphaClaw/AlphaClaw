@@ -4,7 +4,7 @@
   "description": "AlphaClaw iMessage channel plugin",
   "type": "module",
   "devDependencies": {
-    "alphaclaw": "workspace:*"
+    "@alphaclaw/core": "workspace:*"
   },
   "alphaclaw": {
     "extensions": [

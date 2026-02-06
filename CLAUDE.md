@@ -97,3 +97,8 @@ AlphaClaw is forked from OpenClaw. Key decisions:
 - Never commit real API keys, phone numbers, or portfolio data.
 - Use fake placeholders in docs, tests, and examples.
 - Financial data API keys belong in environment variables or `~/.alphaclaw/credentials/`, never in source.
+
+# Rules
+
+- **MUST** ALWAYS USE bun
+- **MUST** NEVER USE npm

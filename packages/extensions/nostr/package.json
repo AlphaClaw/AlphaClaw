@@ -5,11 +5,11 @@
   "type": "module",
   "dependencies": {
     "nostr-tools": "^2.23.0",
-    "alphaclaw": "workspace:*",
+    "@alphaclaw/core": "workspace:*",
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "alphaclaw": "workspace:*"
+    "@alphaclaw/core": "workspace:*"
   },
   "alphaclaw": {
     "extensions": [

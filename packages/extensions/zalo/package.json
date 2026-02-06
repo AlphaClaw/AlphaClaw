@@ -4,11 +4,11 @@
   "description": "AlphaClaw Zalo channel plugin",
   "type": "module",
   "dependencies": {
-    "alphaclaw": "workspace:*",
+    "@alphaclaw/core": "workspace:*",
     "undici": "7.20.0"
   },
   "devDependencies": {
-    "alphaclaw": "workspace:*"
+    "@alphaclaw/core": "workspace:*"
   },
   "alphaclaw": {
     "extensions": [

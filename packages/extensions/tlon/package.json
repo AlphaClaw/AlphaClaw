@@ -8,7 +8,7 @@
     "@urbit/http-api": "^3.0.0"
   },
   "devDependencies": {
-    "alphaclaw": "workspace:*"
+    "@alphaclaw/core": "workspace:*"
   },
   "alphaclaw": {
     "extensions": [

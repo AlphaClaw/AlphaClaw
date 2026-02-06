@@ -1,5 +1,7 @@
 # AlphaClaw
 
+> AlphaClaw is a finance-focused distribution of OpenClaw, designed for daily market briefs, earnings analysis, and investment research.
+
 **AI-native financial copilot.** A chat-first agent that lives in your messaging apps and helps you stay on top of markets, analyze investments, and make better financial decisions through conversation.
 
 Built on [OpenClaw](https://github.com/openclaw/openclaw) — inheriting its multi-channel AI gateway, agent framework, and messaging infrastructure — then specialized for finance.

@@ -1,7 +1,32 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 # Repository Guidelines
 
 - Repo: https://github.com/openclaw/openclaw
 - GitHub issues/comments/PR comments: use literal multiline strings or `-F - <<'EOF'` (or $'...') for real newlines; never embed "\\n".
+
+## Architecture Overview
+
+OpenClaw is a multi-channel AI gateway that connects messaging platforms (WhatsApp, Telegram, Discord, Slack, Signal, iMessage, etc.) to AI agents (Pi). It runs as a CLI, a macOS menubar app, and has iOS/Android companion apps.
+
+**Message flow:** Inbound message → Channel adapter → Gateway (`src/gateway/server.impl.ts`) → Routing layer (`src/routing/resolve-route.ts`) → Agent session → Pi RPC execution → Outbound delivery (`src/infra/outbound/deliver.ts`) → Channel send.
+
+**Key systems and their entry points:**
+
+- **CLI:** `openclaw.mjs` → `src/entry.ts` → `src/cli/run-main.ts` → `src/cli/program/build-program.ts` (Commander.js). Commands are lazy-loaded via `src/cli/program/command-registry.ts`.
+- **Gateway:** `src/gateway/server.impl.ts` — WebSocket + HTTP server (default port 18789). Manages channels, agent chat coordination, cron, mDNS discovery, mobile node registry, plugin loading, and serves the control UI + OpenAI-compatible API.
+- **Agent/AI:** `src/agents/` — Uses `@mariozechner/pi-*` packages. Two modes: embedded Pi (`pi-embedded-runner.ts`) and external CLI runner (`cli-runner.ts`). Model provider abstraction supports Anthropic, OpenAI, Google, Bedrock, xAI, etc. with auth profiles and failover.
+- **Routing:** `src/routing/resolve-route.ts` — Resolves which agent handles a message. Binding hierarchy: peer → parent peer → guild → team → account → channel → default.
+- **Channels:** `src/channels/dock.ts` — Channel metadata and capabilities. Core channels in `src/telegram`, `src/discord`, `src/slack`, `src/signal`, `src/imessage`, `src/web` (WhatsApp via Baileys).
+- **Plugins:** `src/plugins/` — Discovery (`discovery.ts`), jiti-based loader (`loader.ts`), registry, lifecycle hooks. Extensions live in `extensions/` and `~/.openclaw/plugins/`. Plugin SDK exported at `openclaw/plugin-sdk`.
+- **Config:** `src/config/` — JSON5 format (`~/.openclaw/config.json5`), Zod schema validation, hot reload in gateway. Types split across `types.agents.ts`, `types.channels.ts`, etc.
+- **Sessions:** `src/config/sessions/store.ts` — Session routing keys (`<agent>:<channel>:<account>:<peer>`), transcript logs at `~/.openclaw/agents/<agentId>/sessions/*.jsonl`.
+- **Media:** `src/media/` — Fetch (with SSRF protection), local cache, image ops (Sharp), audio, MIME detection, serving endpoint.
+- **Control UI:** `ui/` — Lit web components + Vite, served by the gateway. WebSocket for real-time chat/status.
+- **Apps:** `apps/macos/` (SwiftUI menubar, embeds Node.js), `apps/ios/` (SwiftUI mobile), `apps/android/` (Kotlin + Compose). Shared Swift code in `apps/shared/OpenClawKit/`.
+- **Dependency injection:** `src/cli/deps.ts` — `createDefaultDeps()` provides channel sends, agent runs, etc. for testability.
 
 ## Project Structure & Module Organization
 
@@ -81,6 +106,9 @@
 
 - Framework: Vitest with V8 coverage thresholds (70% lines/branches/functions/statements).
 - Naming: match source names with `*.test.ts`; e2e in `*.e2e.test.ts`.
+- Run a single test file: `pnpm vitest run src/path/to/file.test.ts`
+- Run tests matching a name: `pnpm vitest run -t "test name pattern"`
+- Watch mode: `pnpm test:watch` (or `pnpm vitest src/path/to/file.test.ts` for a single file)
 - Run `pnpm test` (or `pnpm test:coverage`) before pushing when you touch logic.
 - Do not set test workers above 16; tried already.
 - Live tests (real keys): `CLAWDBOT_LIVE_TEST=1 pnpm test:live` (OpenClaw-only) or `LIVE=1 pnpm test:live` (includes provider live tests). Docker: `pnpm test:docker:live-models`, `pnpm test:docker:live-gateway`. Onboarding Docker E2E: `pnpm test:docker:onboard`.

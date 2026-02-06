@@ -56,22 +56,22 @@ jobs:
         include:
           - runtime: node
             task: tsgo
-            command: bun run --cwd packages/AlphaClaw tsgo
+            command: bun run --cwd packages/core tsgo
           - runtime: node
             task: lint
-            command: bun run --cwd packages/AlphaClaw build && bun run --cwd packages/AlphaClaw lint
+            command: bun run --cwd packages/core build && bun run --cwd packages/core lint
           - runtime: node
             task: test
-            command: bun run --cwd packages/AlphaClaw canvas:a2ui:bundle && bun run --cwd packages/AlphaClaw test
+            command: bun run --cwd packages/core canvas:a2ui:bundle && bun run --cwd packages/core test
           - runtime: node
             task: protocol
-            command: bun run --cwd packages/AlphaClaw protocol:check
+            command: bun run --cwd packages/core protocol:check
           - runtime: node
             task: format
             command: bun run format
           - runtime: bun
             task: test
-            command: bun run --cwd packages/AlphaClaw canvas:a2ui:bundle && cd packages/AlphaClaw && bunx vitest run
+            command: bun run --cwd packages/core canvas:a2ui:bundle && cd packages/core && bunx vitest run
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -155,13 +155,13 @@ jobs:
         include:
           - runtime: node
             task: build & lint
-            command: bun run --cwd packages/AlphaClaw build && bun run --cwd packages/AlphaClaw lint
+            command: bun run --cwd packages/core build && bun run --cwd packages/core lint
           - runtime: node
             task: test
-            command: bun run --cwd packages/AlphaClaw canvas:a2ui:bundle && bun run --cwd packages/AlphaClaw test
+            command: bun run --cwd packages/core canvas:a2ui:bundle && bun run --cwd packages/core test
           - runtime: node
             task: protocol
-            command: bun run --cwd packages/AlphaClaw protocol:check
+            command: bun run --cwd packages/core protocol:check
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -214,7 +214,7 @@ jobs:
       matrix:
         include:
           - task: test
-            command: bun run --cwd packages/AlphaClaw test
+            command: bun run --cwd packages/core test
     steps:
       - name: Checkout
         uses: actions/checkout@v4

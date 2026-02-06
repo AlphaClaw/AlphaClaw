@@ -29,4 +29,4 @@ jobs:
           ALPHACLAW_INSTALL_SMOKE_SKIP_CLI: "1"
           ALPHACLAW_INSTALL_SMOKE_SKIP_NONROOT: ${{ github.event_name == 'pull_request' && '1' || '0' }}
           ALPHACLAW_INSTALL_SMOKE_SKIP_PREVIOUS: "1"
-        run: bun run --cwd packages/AlphaClaw test:install:smoke
+        run: bun run --cwd packages/core test:install:smoke

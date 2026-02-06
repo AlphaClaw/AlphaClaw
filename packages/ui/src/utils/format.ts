@@ -1,4 +1,4 @@
-import { stripReasoningTagsFromText } from "../../../AlphaClaw/src/shared/text/reasoning-tags.js";
+import { stripReasoningTagsFromText } from "../../../core/src/shared/text/reasoning-tags.js";
 
 export function formatMs(ms?: number | null): string {
   if (!ms && ms !== 0) return "n/a";

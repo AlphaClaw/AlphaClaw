@@ -21,14 +21,14 @@
     "unicorn/require-post-message-target-origin": "off"
   },
   "ignorePatterns": [
-    "packages/AlphaClaw/assets/",
-    "packages/AlphaClaw/dist/",
-    "packages/AlphaClaw/docs/_layouts/",
+    "packages/core/assets/",
+    "packages/core/dist/",
+    "packages/core/docs/_layouts/",
     "node_modules/",
-    "packages/AlphaClaw/patches/",
-    "packages/AlphaClaw/skills/",
-    "packages/AlphaClaw/src/canvas-host/a2ui/a2ui.bundle.js",
-    "packages/AlphaClaw/Swabble/",
-    "packages/AlphaClaw/vendor/"
+    "packages/core/patches/",
+    "packages/core/skills/",
+    "packages/core/src/canvas-host/a2ui/a2ui.bundle.js",
+    "packages/core/Swabble/",
+    "packages/core/vendor/"
   ]
 }

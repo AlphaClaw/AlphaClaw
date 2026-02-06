@@ -1,10 +1,10 @@
-import { buildDeviceAuthPayload } from "../../../AlphaClaw/src/gateway/device-auth.js";
+import { buildDeviceAuthPayload } from "../../../core/src/gateway/device-auth.js";
 import {
   GATEWAY_CLIENT_MODES,
   GATEWAY_CLIENT_NAMES,
   type GatewayClientMode,
   type GatewayClientName,
-} from "../../../AlphaClaw/src/gateway/protocol/client-info.js";
+} from "../../../core/src/gateway/protocol/client-info.js";
 
 import { clearDeviceAuthToken, loadDeviceAuthToken, storeDeviceAuthToken } from "./device-auth";
 import { loadOrCreateDeviceIdentity, signDevicePayload } from "./device-identity";

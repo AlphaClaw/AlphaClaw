@@ -2,83 +2,83 @@
   - changed-files:
       - any-glob-to-any-file:
           - "packages/extensions/bluebubbles/**"
-          - "packages/AlphaClaw/docs/channels/bluebubbles.md"
+          - "packages/core/docs/channels/bluebubbles.md"
 "channel: discord":
   - changed-files:
       - any-glob-to-any-file:
-          - "packages/AlphaClaw/src/discord/**"
+          - "packages/core/src/discord/**"
           - "packages/extensions/discord/**"
-          - "packages/AlphaClaw/docs/channels/discord.md"
+          - "packages/core/docs/channels/discord.md"
 "channel: feishu":
   - changed-files:
       - any-glob-to-any-file:
-          - "packages/AlphaClaw/src/feishu/**"
+          - "packages/core/src/feishu/**"
           - "packages/extensions/feishu/**"
-          - "packages/AlphaClaw/docs/channels/feishu.md"
+          - "packages/core/docs/channels/feishu.md"
 "channel: googlechat":
   - changed-files:
       - any-glob-to-any-file:
           - "packages/extensions/googlechat/**"
-          - "packages/AlphaClaw/docs/channels/googlechat.md"
+          - "packages/core/docs/channels/googlechat.md"
 "channel: imessage":
   - changed-files:
       - any-glob-to-any-file:
-          - "packages/AlphaClaw/src/imessage/**"
+          - "packages/core/src/imessage/**"
           - "packages/extensions/imessage/**"
-          - "packages/AlphaClaw/docs/channels/imessage.md"
+          - "packages/core/docs/channels/imessage.md"
 "channel: line":
   - changed-files:
       - any-glob-to-any-file:
           - "packages/extensions/line/**"
-          - "packages/AlphaClaw/docs/channels/line.md"
+          - "packages/core/docs/channels/line.md"
 "channel: matrix":
   - changed-files:
       - any-glob-to-any-file:
           - "packages/extensions/matrix/**"
-          - "packages/AlphaClaw/docs/channels/matrix.md"
+          - "packages/core/docs/channels/matrix.md"
 "channel: mattermost":
   - changed-files:
       - any-glob-to-any-file:
           - "packages/extensions/mattermost/**"
-          - "packages/AlphaClaw/docs/channels/mattermost.md"
+          - "packages/core/docs/channels/mattermost.md"
 "channel: msteams":
   - changed-files:
       - any-glob-to-any-file:
           - "packages/extensions/msteams/**"
-          - "packages/AlphaClaw/docs/channels/msteams.md"
+          - "packages/core/docs/channels/msteams.md"
 "channel: nextcloud-talk":
   - changed-files:
       - any-glob-to-any-file:
           - "packages/extensions/nextcloud-talk/**"
-          - "packages/AlphaClaw/docs/channels/nextcloud-talk.md"
+          - "packages/core/docs/channels/nextcloud-talk.md"
 "channel: nostr":
   - changed-files:
       - any-glob-to-any-file:
           - "packages/extensions/nostr/**"
-          - "packages/AlphaClaw/docs/channels/nostr.md"
+          - "packages/core/docs/channels/nostr.md"
 "channel: signal":
   - changed-files:
       - any-glob-to-any-file:
-          - "packages/AlphaClaw/src/signal/**"
+          - "packages/core/src/signal/**"
           - "packages/extensions/signal/**"
-          - "packages/AlphaClaw/docs/channels/signal.md"
+          - "packages/core/docs/channels/signal.md"
 "channel: slack":
   - changed-files:
       - any-glob-to-any-file:
-          - "packages/AlphaClaw/src/slack/**"
+          - "packages/core/src/slack/**"
           - "packages/extensions/slack/**"
-          - "packages/AlphaClaw/docs/channels/slack.md"
+          - "packages/core/docs/channels/slack.md"
 "channel: telegram":
   - changed-files:
       - any-glob-to-any-file:
-          - "packages/AlphaClaw/src/telegram/**"
+          - "packages/core/src/telegram/**"
           - "packages/extensions/telegram/**"
-          - "packages/AlphaClaw/docs/channels/telegram.md"
+          - "packages/core/docs/channels/telegram.md"
 "channel: tlon":
   - changed-files:
       - any-glob-to-any-file:
           - "packages/extensions/tlon/**"
-          - "packages/AlphaClaw/docs/channels/tlon.md"
+          - "packages/core/docs/channels/tlon.md"
 "channel: voice-call":
   - changed-files:
       - any-glob-to-any-file:
@@ -86,89 +86,89 @@
 "channel: whatsapp-web":
   - changed-files:
       - any-glob-to-any-file:
-          - "packages/AlphaClaw/src/web/**"
+          - "packages/core/src/web/**"
           - "packages/extensions/whatsapp/**"
-          - "packages/AlphaClaw/docs/channels/whatsapp.md"
+          - "packages/core/docs/channels/whatsapp.md"
 "channel: zalo":
   - changed-files:
       - any-glob-to-any-file:
           - "packages/extensions/zalo/**"
-          - "packages/AlphaClaw/docs/channels/zalo.md"
+          - "packages/core/docs/channels/zalo.md"
 "channel: zalouser":
   - changed-files:
       - any-glob-to-any-file:
           - "packages/extensions/zalouser/**"
-          - "packages/AlphaClaw/docs/channels/zalouser.md"
+          - "packages/core/docs/channels/zalouser.md"
 
 "app: web-ui":
   - changed-files:
       - any-glob-to-any-file:
           - "packages/ui/**"
-          - "packages/AlphaClaw/src/gateway/control-ui.ts"
-          - "packages/AlphaClaw/src/gateway/control-ui-shared.ts"
-          - "packages/AlphaClaw/src/gateway/protocol/**"
-          - "packages/AlphaClaw/src/gateway/server-methods/chat.ts"
-          - "packages/AlphaClaw/src/infra/control-ui-assets.ts"
+          - "packages/core/src/gateway/control-ui.ts"
+          - "packages/core/src/gateway/control-ui-shared.ts"
+          - "packages/core/src/gateway/protocol/**"
+          - "packages/core/src/gateway/server-methods/chat.ts"
+          - "packages/core/src/infra/control-ui-assets.ts"
 
 "gateway":
   - changed-files:
       - any-glob-to-any-file:
-          - "packages/AlphaClaw/src/gateway/**"
-          - "packages/AlphaClaw/src/daemon/**"
-          - "packages/AlphaClaw/docs/gateway/**"
+          - "packages/core/src/gateway/**"
+          - "packages/core/src/daemon/**"
+          - "packages/core/docs/gateway/**"
 
 "docs":
   - changed-files:
       - any-glob-to-any-file:
-          - "packages/AlphaClaw/docs/**"
-          - "packages/AlphaClaw/docs.acp.md"
+          - "packages/core/docs/**"
+          - "packages/core/docs.acp.md"
 
 "cli":
   - changed-files:
       - any-glob-to-any-file:
-          - "packages/AlphaClaw/src/cli/**"
+          - "packages/core/src/cli/**"
 
 "commands":
   - changed-files:
       - any-glob-to-any-file:
-          - "packages/AlphaClaw/src/commands/**"
+          - "packages/core/src/commands/**"
 
 "scripts":
   - changed-files:
       - any-glob-to-any-file:
-          - "packages/AlphaClaw/scripts/**"
+          - "packages/core/scripts/**"
 
 "docker":
   - changed-files:
       - any-glob-to-any-file:
-          - "packages/AlphaClaw/Dockerfile"
-          - "packages/AlphaClaw/Dockerfile.*"
-          - "packages/AlphaClaw/docker-compose.yml"
-          - "packages/AlphaClaw/docker-setup.sh"
-          - "packages/AlphaClaw/.dockerignore"
-          - "packages/AlphaClaw/scripts/**/*docker*"
-          - "packages/AlphaClaw/scripts/**/Dockerfile*"
-          - "packages/AlphaClaw/scripts/sandbox-*.sh"
-          - "packages/AlphaClaw/src/agents/sandbox*.ts"
-          - "packages/AlphaClaw/src/commands/sandbox*.ts"
-          - "packages/AlphaClaw/src/cli/sandbox-cli.ts"
-          - "packages/AlphaClaw/src/docker-setup.test.ts"
-          - "packages/AlphaClaw/src/config/**/*sandbox*"
-          - "packages/AlphaClaw/docs/cli/sandbox.md"
-          - "packages/AlphaClaw/docs/gateway/sandbox*.md"
-          - "packages/AlphaClaw/docs/install/docker.md"
-          - "packages/AlphaClaw/docs/multi-agent-sandbox-tools.md"
+          - "packages/core/Dockerfile"
+          - "packages/core/Dockerfile.*"
+          - "packages/core/docker-compose.yml"
+          - "packages/core/docker-setup.sh"
+          - "packages/core/.dockerignore"
+          - "packages/core/scripts/**/*docker*"
+          - "packages/core/scripts/**/Dockerfile*"
+          - "packages/core/scripts/sandbox-*.sh"
+          - "packages/core/src/agents/sandbox*.ts"
+          - "packages/core/src/commands/sandbox*.ts"
+          - "packages/core/src/cli/sandbox-cli.ts"
+          - "packages/core/src/docker-setup.test.ts"
+          - "packages/core/src/config/**/*sandbox*"
+          - "packages/core/docs/cli/sandbox.md"
+          - "packages/core/docs/gateway/sandbox*.md"
+          - "packages/core/docs/install/docker.md"
+          - "packages/core/docs/multi-agent-sandbox-tools.md"
 
 "agents":
   - changed-files:
       - any-glob-to-any-file:
-          - "packages/AlphaClaw/src/agents/**"
+          - "packages/core/src/agents/**"
 
 "security":
   - changed-files:
       - any-glob-to-any-file:
-          - "packages/AlphaClaw/docs/cli/security.md"
-          - "packages/AlphaClaw/docs/gateway/security.md"
+          - "packages/core/docs/cli/security.md"
+          - "packages/core/docs/gateway/security.md"
 
 "extensions: copilot-proxy":
   - changed-files:

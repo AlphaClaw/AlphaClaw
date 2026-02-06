@@ -45,5 +45,5 @@ dist
 # Not needed for Docker build
 apps/
 vendor/
-packages/AlphaClaw/Dockerfile
-packages/AlphaClaw/docker-compose.yml
+packages/core/Dockerfile
+packages/core/docker-compose.yml

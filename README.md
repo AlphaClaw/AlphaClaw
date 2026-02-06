@@ -36,7 +36,7 @@ bun install
 bun run build
 
 # Run the gateway (serves API + web UI on port 8888)
-bun run --cwd packages/AlphaClaw alphaclaw gateway --port 8888
+bun run --cwd packages/core alphaclaw gateway --port 8888
 ```
 
 Open `http://localhost:8888` for the Control UI.
@@ -87,7 +87,7 @@ BRAVE_API_KEY=
 ```
 AlphaClaw/
 ├── packages/
-│   ├── AlphaClaw/          # Core gateway + agent + channels
+│   ├── core/               # Core gateway + agent + channels
 │   │   ├── src/
 │   │   │   ├── agents/     # AI agent framework + tools
 │   │   │   ├── channels/   # Telegram, Discord, Slack, WhatsApp

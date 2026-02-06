@@ -3,14 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "workspaces": [
-    "packages/AlphaClaw",
+    "packages/core",
     "packages/ui",
     "packages/extensions/*"
   ],
   "scripts": {
-    "build": "bun run --cwd packages/AlphaClaw build",
-    "check": "bun run --cwd packages/AlphaClaw check",
-    "test": "bun run --cwd packages/AlphaClaw test",
+    "build": "bun run --cwd packages/core build",
+    "check": "bun run --cwd packages/core check",
+    "test": "bun run --cwd packages/core test",
     "lint": "oxlint --type-aware",
     "format": "oxfmt --check",
     "format:fix": "oxfmt --write"

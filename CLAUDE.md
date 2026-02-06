@@ -18,15 +18,15 @@ Not another report generator. AlphaClaw is conversational:
 
 **Inherited from OpenClaw:**
 
-- **Gateway:** `packages/AlphaClaw/src/gateway/server.impl.ts` — WebSocket + HTTP server. Manages channels, agent coordination, cron, plugin loading, control UI, and OpenAI-compatible API.
-- **Agent/AI:** `packages/AlphaClaw/src/agents/` — Built on `@mariozechner/pi-*` packages. Model provider abstraction supports Anthropic, OpenAI, Google, Bedrock, xAI, etc. with auth profiles and failover.
-- **Channels:** `packages/AlphaClaw/src/channels/` — Telegram, Discord, Slack, WhatsApp (via Baileys), and extensible via plugins.
-- **Routing:** `packages/AlphaClaw/src/routing/resolve-route.ts` — Resolves which agent handles a message.
-- **Sessions:** `packages/AlphaClaw/src/config/sessions/store.ts` — Persistent conversation context.
-- **Cron:** `packages/AlphaClaw/src/cron/` — Scheduled tasks (daily briefs, market open alerts).
-- **Plugins:** `packages/AlphaClaw/src/plugins/` — Extension system for adding new data sources, tools, and capabilities.
-- **Config:** `packages/AlphaClaw/src/config/` — JSON5 format, Zod schema validation, hot reload.
-- **CLI:** `packages/AlphaClaw/alphaclaw.mjs` → `src/entry.ts` → Commander.js program.
+- **Gateway:** `packages/core/src/gateway/server.impl.ts` — WebSocket + HTTP server. Manages channels, agent coordination, cron, plugin loading, control UI, and OpenAI-compatible API.
+- **Agent/AI:** `packages/core/src/agents/` — Built on `@mariozechner/pi-*` packages. Model provider abstraction supports Anthropic, OpenAI, Google, Bedrock, xAI, etc. with auth profiles and failover.
+- **Channels:** `packages/core/src/channels/` — Telegram, Discord, Slack, WhatsApp (via Baileys), and extensible via plugins.
+- **Routing:** `packages/core/src/routing/resolve-route.ts` — Resolves which agent handles a message.
+- **Sessions:** `packages/core/src/config/sessions/store.ts` — Persistent conversation context.
+- **Cron:** `packages/core/src/cron/` — Scheduled tasks (daily briefs, market open alerts).
+- **Plugins:** `packages/core/src/plugins/` — Extension system for adding new data sources, tools, and capabilities.
+- **Config:** `packages/core/src/config/` — JSON5 format, Zod schema validation, hot reload.
+- **CLI:** `packages/core/alphaclaw.mjs` → `src/entry.ts` → Commander.js program.
 
 **AlphaClaw-specific (to be built):**
 
@@ -40,7 +40,7 @@ Not another report generator. AlphaClaw is conversational:
 ```
 AlphaClaw/
 ├── packages/
-│   ├── AlphaClaw/        # Core application (forked from OpenClaw)
+│   ├── core/             # Core application (forked from OpenClaw)
 │   │   ├── src/
 │   │   │   ├── agents/   # Pi agent integration
 │   │   │   ├── channels/ # Channel adapters (Telegram, Discord, Slack, etc.)
@@ -63,11 +63,11 @@ AlphaClaw/
 
 - Runtime: Node **22+**. Prefer Bun for dev execution.
 - Install deps: `pnpm install`
-- Run CLI in dev: `pnpm alphaclaw ...` or `bun packages/AlphaClaw/alphaclaw.mjs ...`
+- Run CLI in dev: `pnpm alphaclaw ...` or `bun packages/core/alphaclaw.mjs ...`
 - Type-check/build: `pnpm build`
 - Lint/format: `pnpm check`
 - Tests: `pnpm test` (Vitest)
-- Run single test: `pnpm vitest run packages/AlphaClaw/src/path/to/file.test.ts`
+- Run single test: `pnpm vitest run packages/core/src/path/to/file.test.ts`
 
 ## Coding Style
 

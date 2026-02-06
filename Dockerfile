@@ -12,7 +12,7 @@ WORKDIR /app
 
 # Copy dependency manifests first for layer caching
 COPY package.json bun.lock bunfig.toml ./
-COPY packages/AlphaClaw/package.json packages/AlphaClaw/package.json
+COPY packages/core/package.json packages/core/package.json
 COPY packages/ui/package.json packages/ui/package.json
 
 # Install all workspace deps
@@ -22,7 +22,7 @@ RUN bun install
 COPY . .
 
 # Build AlphaClaw + UI
-RUN ALPHACLAW_A2UI_SKIP_MISSING=1 bun run --cwd packages/AlphaClaw build
+RUN ALPHACLAW_A2UI_SKIP_MISSING=1 bun run --cwd packages/core build
 RUN bun run --cwd packages/ui build
 
 # ── Stage 2: Production runtime ──────────────────────────────────────
@@ -36,17 +36,17 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 
 # AlphaClaw package
-COPY --from=builder /app/packages/AlphaClaw/dist ./packages/AlphaClaw/dist
-COPY --from=builder /app/packages/AlphaClaw/alphaclaw.mjs ./packages/AlphaClaw/alphaclaw.mjs
-COPY --from=builder /app/packages/AlphaClaw/assets ./packages/AlphaClaw/assets
-COPY --from=builder /app/packages/AlphaClaw/skills ./packages/AlphaClaw/skills
-COPY --from=builder /app/packages/AlphaClaw/package.json ./packages/AlphaClaw/package.json
-COPY --from=builder /app/packages/AlphaClaw/node_modules ./packages/AlphaClaw/node_modules
+COPY --from=builder /app/packages/core/dist ./packages/core/dist
+COPY --from=builder /app/packages/core/alphaclaw.mjs ./packages/core/alphaclaw.mjs
+COPY --from=builder /app/packages/core/assets ./packages/core/assets
+COPY --from=builder /app/packages/core/skills ./packages/core/skills
+COPY --from=builder /app/packages/core/package.json ./packages/core/package.json
+COPY --from=builder /app/packages/core/node_modules ./packages/core/node_modules
 
 # Control UI
 COPY --from=builder /app/packages/dist/control-ui ./packages/dist/control-ui
 
-WORKDIR /app/packages/AlphaClaw
+WORKDIR /app/packages/core
 
 ENV NODE_ENV=production
 

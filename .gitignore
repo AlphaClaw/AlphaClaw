@@ -17,48 +17,48 @@ packages/ui/test-results/
 
 # Bun build artifacts
 *.bun-build
-packages/AlphaClaw/apps/macos/.build/
-packages/AlphaClaw/apps/shared/MoltbotKit/.build/
+packages/core/apps/macos/.build/
+packages/core/apps/shared/MoltbotKit/.build/
 **/ModuleCache/
 bin/
 bin/clawdbot-mac
 bin/docs-list
-packages/AlphaClaw/apps/macos/.build-local/
-packages/AlphaClaw/apps/macos/.swiftpm/
-packages/AlphaClaw/apps/shared/MoltbotKit/.swiftpm/
+packages/core/apps/macos/.build-local/
+packages/core/apps/macos/.swiftpm/
+packages/core/apps/shared/MoltbotKit/.swiftpm/
 Core/
-packages/AlphaClaw/apps/ios/*.xcodeproj/
-packages/AlphaClaw/apps/ios/*.xcworkspace/
-packages/AlphaClaw/apps/ios/.swiftpm/
+packages/core/apps/ios/*.xcodeproj/
+packages/core/apps/ios/*.xcworkspace/
+packages/core/apps/ios/.swiftpm/
 vendor/
-packages/AlphaClaw/apps/ios/Clawdbot.xcodeproj/
-packages/AlphaClaw/apps/ios/Clawdbot.xcodeproj/**
-packages/AlphaClaw/apps/macos/.build/**
+packages/core/apps/ios/Clawdbot.xcodeproj/
+packages/core/apps/ios/Clawdbot.xcodeproj/**
+packages/core/apps/macos/.build/**
 **/*.bun-build
-packages/AlphaClaw/apps/ios/*.xcfilelist
+packages/core/apps/ios/*.xcfilelist
 
 # Vendor build artifacts
-packages/AlphaClaw/vendor/a2ui/renderers/lit/dist/
-packages/AlphaClaw/src/canvas-host/a2ui/*.bundle.js
-packages/AlphaClaw/src/canvas-host/a2ui/*.map
+packages/core/vendor/a2ui/renderers/lit/dist/
+packages/core/src/canvas-host/a2ui/*.bundle.js
+packages/core/src/canvas-host/a2ui/*.map
 .bundle.hash
 
 # fastlane (iOS)
-packages/AlphaClaw/apps/ios/fastlane/README.md
-packages/AlphaClaw/apps/ios/fastlane/report.xml
-packages/AlphaClaw/apps/ios/fastlane/Preview.html
-packages/AlphaClaw/apps/ios/fastlane/screenshots/
-packages/AlphaClaw/apps/ios/fastlane/test_output/
-packages/AlphaClaw/apps/ios/fastlane/logs/
-packages/AlphaClaw/apps/ios/fastlane/.env
-packages/AlphaClaw/apps/ios/fastlane/report.xml
+packages/core/apps/ios/fastlane/README.md
+packages/core/apps/ios/fastlane/report.xml
+packages/core/apps/ios/fastlane/Preview.html
+packages/core/apps/ios/fastlane/screenshots/
+packages/core/apps/ios/fastlane/test_output/
+packages/core/apps/ios/fastlane/logs/
+packages/core/apps/ios/fastlane/.env
+packages/core/apps/ios/fastlane/report.xml
 
 # fastlane build artifacts (local)
-packages/AlphaClaw/apps/ios/*.ipa
-packages/AlphaClaw/apps/ios/*.dSYM.zip
+packages/core/apps/ios/*.ipa
+packages/core/apps/ios/*.dSYM.zip
 
 # provisioning profiles (local)
-packages/AlphaClaw/apps/ios/*.mobileprovision
+packages/core/apps/ios/*.mobileprovision
 .env
 
 # Local untracked files

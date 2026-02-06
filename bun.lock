@@ -10,7 +10,7 @@
         "oxlint-tsgolint": "^0.11.4",
       },
     },
-    "packages/AlphaClaw": {
+    "packages/core": {
       "name": "@alphaclaw/core",
       "version": "0.0.0",
       "bin": {
@@ -429,7 +429,7 @@
 
     "@alphaclaw/copilot-proxy": ["@alphaclaw/copilot-proxy@workspace:packages/extensions/copilot-proxy"],
 
-    "@alphaclaw/core": ["@alphaclaw/core@workspace:packages/AlphaClaw"],
+    "@alphaclaw/core": ["@alphaclaw/core@workspace:packages/core"],
 
     "@alphaclaw/diagnostics-otel": ["@alphaclaw/diagnostics-otel@workspace:packages/extensions/diagnostics-otel"],
 

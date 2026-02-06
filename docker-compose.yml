@@ -20,8 +20,8 @@ services:
       - ${ALPHACLAW_CONFIG_DIR:-~/.alphaclaw}:/home/node/.alphaclaw
       - ${ALPHACLAW_WORKSPACE_DIR:-~/.alphaclaw/workspace}:/home/node/.alphaclaw/workspace
     ports:
-      - "${ALPHACLAW_GATEWAY_PORT:-18789}:18789"
-      - "${ALPHACLAW_BRIDGE_PORT:-18790}:18790"
+      - "${ALPHACLAW_GATEWAY_PORT:-8888}:8888"
+      - "${ALPHACLAW_BRIDGE_PORT:-8889}:8889"
     init: true
     restart: unless-stopped
     command:
@@ -32,7 +32,7 @@ services:
         "--bind",
         "${ALPHACLAW_GATEWAY_BIND:-lan}",
         "--port",
-        "18789",
+        "8888",
       ]
 
   alphaclaw-cli:

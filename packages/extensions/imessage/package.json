@@ -1,0 +1,14 @@
+{
+  "name": "@alphaclaw/imessage",
+  "version": "2026.2.4",
+  "description": "AlphaClaw iMessage channel plugin",
+  "type": "module",
+  "devDependencies": {
+    "alphaclaw": "workspace:*"
+  },
+  "alphaclaw": {
+    "extensions": [
+      "./index.ts"
+    ]
+  }
+}

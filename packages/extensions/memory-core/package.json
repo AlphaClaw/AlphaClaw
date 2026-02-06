@@ -1,0 +1,17 @@
+{
+  "name": "@alphaclaw/memory-core",
+  "version": "2026.2.4",
+  "description": "AlphaClaw core memory search plugin",
+  "type": "module",
+  "devDependencies": {
+    "alphaclaw": "workspace:*"
+  },
+  "peerDependencies": {
+    "alphaclaw": ">=2026.1.26"
+  },
+  "alphaclaw": {
+    "extensions": [
+      "./index.ts"
+    ]
+  }
+}

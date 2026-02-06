@@ -1,0 +1,14 @@
+{
+  "name": "@alphaclaw/telegram",
+  "version": "2026.2.4",
+  "description": "AlphaClaw Telegram channel plugin",
+  "type": "module",
+  "devDependencies": {
+    "alphaclaw": "workspace:*"
+  },
+  "alphaclaw": {
+    "extensions": [
+      "./index.ts"
+    ]
+  }
+}

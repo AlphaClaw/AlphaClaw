@@ -51,6 +51,7 @@ src/alphaclaw/
 All config via environment variables (or `.env` file). See `.env.example`.
 
 Key variables:
+
 - `ALPHACLAW_MODEL` — LiteLLM model string (default: `anthropic/claude-sonnet-4-5-20250929`)
 - `DATABASE_URL` — PostgreSQL connection string
 - `TELEGRAM_BOT_TOKEN`, `DISCORD_BOT_TOKEN`, `SLACK_BOT_TOKEN` — channel tokens
@@ -66,7 +67,8 @@ docker compose up app         # Start app
 ## Rules
 
 - **MUST** use `uv` for all package management
-- **NEVER** use pip, npm, or any other package manager
+- **MUST NOT** use pip, npm, or any other package manager
+- **MUST** ALWAYS check ide warnings after finish coding
 - Keep files under ~500 LOC
 - Use async/await throughout
 - Type hints on all function signatures

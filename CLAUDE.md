@@ -1,6 +1,6 @@
 # AlphaClaw
 
-AI-native financial copilot — a chat-first agent that lives in your messaging apps (Telegram, Discord, Slack, Teams, Web) and helps you stay on top of markets, analyze investments, and make better financial decisions through conversation.
+OpenClaw-inspired agentic financial assistant for market intelligence and earnings analysis.
 
 ## Architecture
 

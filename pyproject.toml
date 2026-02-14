@@ -1,7 +1,7 @@
 [project]
 name = "alphaclaw"
 version = "0.1.0"
-description = "AI-native financial copilot — a chat-first agent for markets, analysis, and investment decisions"
+description = "OpenClaw-inspired agentic financial assistant for market intelligence and earnings analysis"
 readme = "README.md"
 requires-python = ">=3.12"
 license = "MIT"

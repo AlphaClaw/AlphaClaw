@@ -13,7 +13,7 @@ from alphaclaw.config import settings
 log = logging.getLogger(__name__)
 
 # Per-user conversation history (in-memory; DB-backed in production)
-_histories: dict[int, list[dict]] = {}
+_histories: dict[int, list] = {}
 
 
 async def _start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

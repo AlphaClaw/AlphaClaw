@@ -26,6 +26,15 @@ class Settings(BaseSettings):
     teams_app_id: str = ""
     teams_app_password: str = ""
 
+    @property
+    def pydantic_ai_model(self) -> str:
+        """Convert 'anthropic/model' (LiteLLM style) to 'anthropic:model' (PydanticAI style)."""
+        m = self.model
+        if "/" in m and ":" not in m:
+            prefix, _, rest = m.partition("/")
+            return f"{prefix}:{rest}"
+        return m
+
     # Financial data
     polygon_api_key: str = ""
 

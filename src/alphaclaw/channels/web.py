@@ -97,7 +97,7 @@ async def health():
 async def websocket_endpoint(ws: WebSocket):
     await ws.accept()
     user_id = str(uuid.uuid4())
-    history: list[dict] = []
+    history: list = []
     log.info("WebSocket connected: %s", user_id)
 
     try:

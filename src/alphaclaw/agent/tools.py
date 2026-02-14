@@ -1,8 +1,7 @@
-"""Tool definitions for the agent loop.
+"""Agent tools — registered via @agent.tool decorators.
 
-Each tool is a dict matching the OpenAI function-calling schema
-(which LiteLLM passes through to any provider). The actual
-implementations live in alphaclaw.data and alphaclaw.storage.
+PydanticAI auto-generates JSON schemas from function signatures and docstrings.
+Data providers are injected via the Deps dataclass on each run.
 """
 
 from __future__ import annotations
@@ -10,212 +9,116 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from alphaclaw.data.yfinance import YFinanceProvider
-from alphaclaw.data.polygon import PolygonProvider
-from alphaclaw.data.sec import SECProvider
-from alphaclaw.config import settings
+from pydantic_ai import RunContext
+
+from alphaclaw.agent.agent import Deps, agent
 from alphaclaw.storage.db import async_session
 from alphaclaw.storage.repo import Repository
 
-# Pick data provider based on config
-_market = PolygonProvider() if settings.polygon_api_key else YFinanceProvider()
-_sec = SECProvider()
 
-TOOL_SCHEMAS: list[dict] = [
-    {
-        "type": "function",
-        "function": {
-            "name": "get_quote",
-            "description": "Get current price, change, and volume for a stock ticker.",
-            "parameters": {
-                "type": "object",
-                "properties": {"ticker": {"type": "string", "description": "Stock ticker symbol (e.g. AAPL)"}},
-                "required": ["ticker"],
-            },
-        },
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "get_historical",
-            "description": "Get historical price data for a ticker. Returns OHLCV data.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "ticker": {"type": "string", "description": "Stock ticker symbol"},
-                    "period": {
-                        "type": "string",
-                        "description": "Time period: 1d, 5d, 1mo, 3mo, 6mo, 1y, 5y",
-                        "default": "1mo",
-                    },
-                },
-                "required": ["ticker"],
-            },
-        },
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "get_earnings",
-            "description": "Get earnings data including EPS, revenue, and estimates for a ticker.",
-            "parameters": {
-                "type": "object",
-                "properties": {"ticker": {"type": "string", "description": "Stock ticker symbol"}},
-                "required": ["ticker"],
-            },
-        },
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "get_company_info",
-            "description": "Get company profile: sector, industry, market cap, description.",
-            "parameters": {
-                "type": "object",
-                "properties": {"ticker": {"type": "string", "description": "Stock ticker symbol"}},
-                "required": ["ticker"],
-            },
-        },
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "search_news",
-            "description": "Search for recent financial news by topic or ticker.",
-            "parameters": {
-                "type": "object",
-                "properties": {"query": {"type": "string", "description": "Search query (ticker or topic)"}},
-                "required": ["query"],
-            },
-        },
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "search_filings",
-            "description": "Search SEC EDGAR filings for a company.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "ticker": {"type": "string", "description": "Stock ticker symbol"},
-                    "filing_type": {
-                        "type": "string",
-                        "description": "Filing type: 10-K, 10-Q, 8-K",
-                        "default": "10-K",
-                    },
-                },
-                "required": ["ticker"],
-            },
-        },
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "get_watchlist",
-            "description": "Get the user's saved watchlist of tickers.",
-            "parameters": {
-                "type": "object",
-                "properties": {},
-            },
-        },
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "update_watchlist",
-            "description": "Add or remove tickers from the user's watchlist.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "add": {
-                        "type": "array",
-                        "items": {"type": "string"},
-                        "description": "Tickers to add",
-                        "default": [],
-                    },
-                    "remove": {
-                        "type": "array",
-                        "items": {"type": "string"},
-                        "description": "Tickers to remove",
-                        "default": [],
-                    },
-                },
-            },
-        },
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "compare_performance",
-            "description": "Compare price performance of tickers against a benchmark over a period.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "tickers": {
-                        "type": "array",
-                        "items": {"type": "string"},
-                        "description": "Tickers to compare",
-                    },
-                    "benchmark": {"type": "string", "description": "Benchmark ticker (default: SPY)", "default": "SPY"},
-                    "period": {"type": "string", "description": "Time period: 1mo, 3mo, 6mo, 1y", "default": "3mo"},
-                },
-                "required": ["tickers"],
-            },
-        },
-    },
-]
+def _json(data: Any) -> str:
+    return json.dumps(data, default=str)
 
 
-async def execute_tool(name: str, arguments: dict[str, Any], user_id: str | None = None) -> str:
-    """Execute a tool by name and return the JSON result."""
-    try:
-        match name:
-            case "get_quote":
-                result = await _market.get_quote(arguments["ticker"])
-            case "get_historical":
-                result = await _market.get_historical(arguments["ticker"], arguments.get("period", "1mo"))
-            case "get_earnings":
-                result = await _market.get_earnings(arguments["ticker"])
-            case "get_company_info":
-                result = await _market.get_company_info(arguments["ticker"])
-            case "search_news":
-                result = await _market.search_news(arguments["query"])
-            case "search_filings":
-                result = await _sec.search_filings(arguments["ticker"], arguments.get("filing_type", "10-K"))
-            case "get_watchlist":
-                result = await _get_watchlist(user_id)
-            case "update_watchlist":
-                result = await _update_watchlist(
-                    user_id, arguments.get("add", []), arguments.get("remove", [])
-                )
-            case "compare_performance":
-                result = await _market.compare_performance(
-                    arguments["tickers"], arguments.get("benchmark", "SPY"), arguments.get("period", "3mo")
-                )
-            case _:
-                result = {"error": f"Unknown tool: {name}"}
-    except Exception as e:
-        result = {"error": str(e)}
+@agent.tool
+async def get_quote(ctx: RunContext[Deps], ticker: str) -> str:
+    """Get current price, change, and volume for a stock ticker.
 
-    return json.dumps(result, default=str)
+    Args:
+        ticker: Stock ticker symbol (e.g. AAPL)
+    """
+    result = await ctx.deps.market.get_quote(ticker)
+    return _json(result)
 
 
-async def _get_watchlist(user_id: str | None) -> dict:
-    if not user_id:
-        return {"tickers": [], "note": "No user context — watchlist unavailable"}
+@agent.tool
+async def get_historical(ctx: RunContext[Deps], ticker: str, period: str = "1mo") -> str:
+    """Get historical price data for a ticker. Returns OHLCV data.
+
+    Args:
+        ticker: Stock ticker symbol
+        period: Time period: 1d, 5d, 1mo, 3mo, 6mo, 1y, 5y
+    """
+    result = await ctx.deps.market.get_historical(ticker, period)
+    return _json(result)
+
+
+@agent.tool
+async def get_earnings(ctx: RunContext[Deps], ticker: str) -> str:
+    """Get earnings data including EPS, revenue, and estimates for a ticker.
+
+    Args:
+        ticker: Stock ticker symbol
+    """
+    result = await ctx.deps.market.get_earnings(ticker)
+    return _json(result)
+
+
+@agent.tool
+async def get_company_info(ctx: RunContext[Deps], ticker: str) -> str:
+    """Get company profile: sector, industry, market cap, description.
+
+    Args:
+        ticker: Stock ticker symbol
+    """
+    result = await ctx.deps.market.get_company_info(ticker)
+    return _json(result)
+
+
+@agent.tool
+async def search_news(ctx: RunContext[Deps], query: str) -> str:
+    """Search for recent financial news by topic or ticker.
+
+    Args:
+        query: Search query (ticker or topic)
+    """
+    result = await ctx.deps.market.search_news(query)
+    return _json(result)
+
+
+@agent.tool
+async def search_filings(ctx: RunContext[Deps], ticker: str, filing_type: str = "10-K") -> str:
+    """Search SEC EDGAR filings for a company.
+
+    Args:
+        ticker: Stock ticker symbol
+        filing_type: Filing type: 10-K, 10-Q, 8-K
+    """
+    result = await ctx.deps.sec.search_filings(ticker, filing_type)
+    return _json(result)
+
+
+@agent.tool
+async def get_watchlist(ctx: RunContext[Deps]) -> str:
+    """Get the user's saved watchlist of tickers."""
+    if not ctx.deps.user_id:
+        return _json({"tickers": [], "note": "No user context — watchlist unavailable"})
     async with async_session() as session:
         repo = Repository(session)
-        user = await repo.get_or_create_user("unknown", user_id)
+        user = await repo.get_or_create_user("unknown", ctx.deps.user_id)
         wl = await repo.get_watchlist(user.id)
-        return {"tickers": wl.tickers if wl else [], "name": wl.name if wl else "default"}
+        return _json({"tickers": wl.tickers if wl else [], "name": wl.name if wl else "default"})
 
 
-async def _update_watchlist(user_id: str | None, add: list[str], remove: list[str]) -> dict:
-    if not user_id:
-        return {"error": "No user context — cannot update watchlist"}
+@agent.tool
+async def update_watchlist(
+    ctx: RunContext[Deps],
+    add: list[str] | None = None,
+    remove: list[str] | None = None,
+) -> str:
+    """Add or remove tickers from the user's watchlist.
+
+    Args:
+        add: Tickers to add
+        remove: Tickers to remove
+    """
+    if not ctx.deps.user_id:
+        return _json({"error": "No user context — cannot update watchlist"})
+    add = add or []
+    remove = remove or []
     async with async_session() as session:
         repo = Repository(session)
-        user = await repo.get_or_create_user("unknown", user_id)
+        user = await repo.get_or_create_user("unknown", ctx.deps.user_id)
         wl = await repo.get_watchlist(user.id)
         current = list(wl.tickers) if wl else []
         for t in add:
@@ -227,4 +130,22 @@ async def _update_watchlist(user_id: str | None, add: list[str], remove: list[st
             except ValueError:
                 pass
         wl = await repo.upsert_watchlist(user.id, current)
-        return {"tickers": wl.tickers, "name": wl.name}
+        return _json({"tickers": wl.tickers, "name": wl.name})
+
+
+@agent.tool
+async def compare_performance(
+    ctx: RunContext[Deps],
+    tickers: list[str],
+    benchmark: str = "SPY",
+    period: str = "3mo",
+) -> str:
+    """Compare price performance of tickers against a benchmark over a period.
+
+    Args:
+        tickers: Tickers to compare
+        benchmark: Benchmark ticker (default: SPY)
+        period: Time period: 1mo, 3mo, 6mo, 1y
+    """
+    result = await ctx.deps.market.compare_performance(tickers, benchmark, period)
+    return _json(result)

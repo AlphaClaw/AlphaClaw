@@ -1,55 +1,76 @@
-"""Tests for the agent loop and tools."""
+"""Tests for the PydanticAI agent and tools."""
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock
 
 import pytest
+from pydantic_ai import models
+from pydantic_ai.models.test import TestModel
 
-from alphaclaw.agent.tools import TOOL_SCHEMAS, execute_tool
+from alphaclaw.agent.agent import Deps, agent
+from alphaclaw.agent import tools as _tools  # noqa: F401 — register tools
 
-
-def test_tool_schemas_valid():
-    """All tool schemas have required fields."""
-    assert len(TOOL_SCHEMAS) == 9
-    for schema in TOOL_SCHEMAS:
-        assert schema["type"] == "function"
-        fn = schema["function"]
-        assert "name" in fn
-        assert "description" in fn
-        assert "parameters" in fn
+# Prevent accidental real LLM calls in tests
+models.ALLOW_MODEL_REQUESTS = False
 
 
-def test_tool_names_unique():
-    """All tool names are unique."""
-    names = [s["function"]["name"] for s in TOOL_SCHEMAS]
-    assert len(names) == len(set(names))
+def _make_deps(user_id: str | None = "test-user") -> Deps:
+    market = AsyncMock()
+    sec = AsyncMock()
+    return Deps(user_id=user_id, market=market, sec=sec)
 
 
 @pytest.mark.asyncio
-async def test_execute_unknown_tool():
-    """Unknown tool returns error."""
-    result = await execute_tool("nonexistent", {})
-    assert "error" in result
-    assert "Unknown tool" in result
+async def test_agent_has_9_tools():
+    """Agent should have all 9 tools registered."""
+    m = TestModel(call_tools=[], custom_output_text="ok")
+    with agent.override(model=m):
+        await agent.run("test", model=m, deps=_make_deps())
+    tool_names = sorted(
+        t.name for t in m.last_model_request_parameters.function_tools
+    )
+    assert len(tool_names) == 9
+    assert tool_names == sorted([
+        "get_quote",
+        "get_historical",
+        "get_earnings",
+        "get_company_info",
+        "search_news",
+        "search_filings",
+        "get_watchlist",
+        "update_watchlist",
+        "compare_performance",
+    ])
 
 
 @pytest.mark.asyncio
-async def test_execute_get_quote():
-    """get_quote calls the market provider."""
-    mock_data = {"ticker": "AAPL", "price": 150.0, "source": "test"}
-    with patch("alphaclaw.agent.tools._market") as mock_market:
-        mock_market.get_quote = AsyncMock(return_value=mock_data)
-        result = await execute_tool("get_quote", {"ticker": "AAPL"})
-        assert "AAPL" in result
-        assert "150.0" in result
+async def test_get_quote_calls_provider():
+    """get_quote calls the market provider and returns its data."""
+    deps = _make_deps()
+    deps.market.get_quote = AsyncMock(return_value={"ticker": "AAPL", "price": 150.0})
+
+    m = TestModel(call_tools=["get_quote"], custom_output_text="AAPL is $150")
+    with agent.override(model=m):
+        result = await agent.run("What is AAPL price?", model=m, deps=deps)
+    assert result.output == "AAPL is $150"
+    deps.market.get_quote.assert_called_once()
 
 
 @pytest.mark.asyncio
-async def test_execute_tool_exception():
-    """Tool exceptions are caught and returned as errors."""
-    with patch("alphaclaw.agent.tools._market") as mock_market:
-        mock_market.get_quote = AsyncMock(side_effect=ValueError("API down"))
-        result = await execute_tool("get_quote", {"ticker": "AAPL"})
-        assert "error" in result
-        assert "API down" in result
+async def test_custom_output():
+    """Agent returns custom output text from TestModel."""
+    m = TestModel(call_tools=[], custom_output_text="Hello from test")
+    with agent.override(model=m):
+        result = await agent.run("Hi", model=m, deps=_make_deps())
+    assert result.output == "Hello from test"
+
+
+@pytest.mark.asyncio
+async def test_run_with_history():
+    """Agent accepts message_history and returns messages."""
+    m = TestModel(call_tools=[], custom_output_text="response")
+    with agent.override(model=m):
+        result = await agent.run("follow up", model=m, deps=_make_deps(), message_history=[])
+    assert result.output == "response"
+    assert len(result.all_messages()) > 0

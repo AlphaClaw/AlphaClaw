@@ -13,7 +13,7 @@ from alphaclaw.config import settings
 
 log = logging.getLogger(__name__)
 
-_histories: dict[str, list[dict]] = {}
+_histories: dict[str, list] = {}
 
 
 class SlackChannel:

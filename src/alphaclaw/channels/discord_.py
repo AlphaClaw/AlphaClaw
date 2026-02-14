@@ -12,7 +12,7 @@ from alphaclaw.config import settings
 
 log = logging.getLogger(__name__)
 
-_histories: dict[int, list[dict]] = {}
+_histories: dict[int, list] = {}
 
 
 class _Bot(discord.Client):

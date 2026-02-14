@@ -1,0 +1,31 @@
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: alphaclaw
+      POSTGRES_PASSWORD: alphaclaw
+      POSTGRES_DB: alphaclaw
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U alphaclaw
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  alphaclaw:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://alphaclaw:alphaclaw@db:5432/alphaclaw
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data/alphaclaw:/app/data

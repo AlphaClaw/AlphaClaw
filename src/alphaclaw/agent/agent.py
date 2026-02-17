@@ -3,12 +3,15 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from pydantic_ai import Agent
 
 from alphaclaw.agent.prompts import SYSTEM_PROMPT
 from alphaclaw.data.base import DataProvider
+
+if TYPE_CHECKING:
+    from alphaclaw.storage.repo import Repository
 
 
 class SECProviderProtocol:
@@ -20,6 +23,8 @@ class Deps:
     user_id: str | None
     market: DataProvider
     sec: SECProviderProtocol
+    channel: str = "web"
+    repo: Repository | None = None
 
 
 # Model is not set here to avoid API key validation at import time.

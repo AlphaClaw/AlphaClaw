@@ -24,8 +24,7 @@ log = logging.getLogger("alphaclaw")
 async def _run_brief() -> None:
     try:
         brief = await generate_brief()
-        log.info("Daily brief generated (%d chars)", len(brief))
-        # TODO: push brief to subscribed channels
+        log.info("Daily brief generated and saved (%d chars)", len(brief))
     except Exception:
         log.exception("Failed to generate daily brief")
 

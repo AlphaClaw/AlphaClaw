@@ -12,8 +12,6 @@ from alphaclaw.config import settings
 
 log = logging.getLogger(__name__)
 
-_histories: dict[int, list] = {}
-
 
 class _Bot(discord.Client):
     def __init__(self) -> None:
@@ -38,11 +36,9 @@ class _Bot(discord.Client):
             text = text[len(f"@{self.user.display_name}") :].strip()
 
         user_id = message.author.id
-        history = _histories.get(user_id, [])
 
         async with message.channel.typing():
-            reply, history = await agent.run(text, history=history, user_id=str(user_id))
-            _histories[user_id] = history[-40:]
+            reply, _ = await agent.run(text, user_id=str(user_id), channel="discord")
 
         # Discord has a 2000 char limit
         for i in range(0, len(reply), 1990):

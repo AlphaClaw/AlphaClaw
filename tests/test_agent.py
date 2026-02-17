@@ -18,19 +18,21 @@ models.ALLOW_MODEL_REQUESTS = False
 def _make_deps(user_id: str | None = "test-user") -> Deps:
     market = AsyncMock()
     sec = AsyncMock()
-    return Deps(user_id=user_id, market=market, sec=sec)
+    from alphaclaw.storage.repo import Repository
+    repo = AsyncMock(spec=Repository)
+    return Deps(user_id=user_id, market=market, sec=sec, channel="test", repo=repo)
 
 
 @pytest.mark.asyncio
-async def test_agent_has_9_tools():
-    """Agent should have all 9 tools registered."""
+async def test_agent_has_10_tools():
+    """Agent should have all 10 tools registered."""
     m = TestModel(call_tools=[], custom_output_text="ok")
     with agent.override(model=m):
         await agent.run("test", model=m, deps=_make_deps())
     tool_names = sorted(
         t.name for t in m.last_model_request_parameters.function_tools
     )
-    assert len(tool_names) == 9
+    assert len(tool_names) == 10
     assert tool_names == sorted([
         "get_quote",
         "get_historical",
@@ -41,6 +43,7 @@ async def test_agent_has_9_tools():
         "get_watchlist",
         "update_watchlist",
         "compare_performance",
+        "get_latest_brief",
     ])
 
 

@@ -3,7 +3,7 @@ import uuid
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from alphaclaw.storage.models import Conversation, User, Watchlist
+from alphaclaw.storage.models import Brief, Conversation, User, Watchlist
 
 
 class Repository:
@@ -62,3 +62,17 @@ class Repository:
         await self.session.commit()
         await self.session.refresh(conv)
         return conv
+
+    # --- Briefs ---
+
+    async def save_brief(self, content: str) -> Brief:
+        brief = Brief(content=content)
+        self.session.add(brief)
+        await self.session.commit()
+        await self.session.refresh(brief)
+        return brief
+
+    async def get_latest_brief(self) -> Brief | None:
+        stmt = select(Brief).order_by(Brief.generated_at.desc()).limit(1)
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()

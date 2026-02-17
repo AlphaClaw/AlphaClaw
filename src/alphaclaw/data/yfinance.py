@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import asyncio
+from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 from typing import Any
 
 import yfinance as yf
+
+_executor = ThreadPoolExecutor(max_workers=4, thread_name_prefix="yfinance")
 
 
 def _sync_quote(ticker: str) -> dict[str, Any]:
@@ -127,21 +130,21 @@ class YFinanceProvider:
     """Async wrapper around yfinance (sync library)."""
 
     async def get_quote(self, ticker: str) -> dict[str, Any]:
-        return await asyncio.get_event_loop().run_in_executor(None, partial(_sync_quote, ticker))
+        return await asyncio.get_running_loop().run_in_executor(_executor, partial(_sync_quote, ticker))
 
     async def get_historical(self, ticker: str, period: str = "1mo") -> dict[str, Any]:
-        return await asyncio.get_event_loop().run_in_executor(None, partial(_sync_historical, ticker, period))
+        return await asyncio.get_running_loop().run_in_executor(_executor, partial(_sync_historical, ticker, period))
 
     async def get_earnings(self, ticker: str) -> dict[str, Any]:
-        return await asyncio.get_event_loop().run_in_executor(None, partial(_sync_earnings, ticker))
+        return await asyncio.get_running_loop().run_in_executor(_executor, partial(_sync_earnings, ticker))
 
     async def get_company_info(self, ticker: str) -> dict[str, Any]:
-        return await asyncio.get_event_loop().run_in_executor(None, partial(_sync_company_info, ticker))
+        return await asyncio.get_running_loop().run_in_executor(_executor, partial(_sync_company_info, ticker))
 
     async def search_news(self, query: str) -> dict[str, Any]:
-        return await asyncio.get_event_loop().run_in_executor(None, partial(_sync_news, query))
+        return await asyncio.get_running_loop().run_in_executor(_executor, partial(_sync_news, query))
 
     async def compare_performance(
         self, tickers: list[str], benchmark: str = "SPY", period: str = "3mo"
     ) -> dict[str, Any]:
-        return await asyncio.get_event_loop().run_in_executor(None, partial(_sync_compare, tickers, benchmark, period))
+        return await asyncio.get_running_loop().run_in_executor(_executor, partial(_sync_compare, tickers, benchmark, period))

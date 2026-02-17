@@ -12,9 +12,6 @@ from alphaclaw.config import settings
 
 log = logging.getLogger(__name__)
 
-# Per-user conversation history (in-memory; DB-backed in production)
-_histories: dict[int, list] = {}
-
 
 async def _start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(
@@ -30,9 +27,7 @@ async def _handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     if not text:
         return
 
-    history = _histories.get(user_id, [])
-    reply, history = await agent.run(text, history=history, user_id=str(user_id))
-    _histories[user_id] = history[-40:]  # Keep last 40 messages
+    reply, _ = await agent.run(text, user_id=str(user_id), channel="telegram")
 
     # Telegram has a 4096 char limit per message
     for i in range(0, len(reply), 4000):

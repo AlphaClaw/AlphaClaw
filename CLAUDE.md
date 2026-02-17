@@ -67,6 +67,7 @@ docker compose up app         # Start app
 ## Rules
 
 - **MUST** use `uv` for all package management
+- **must** use `uv run python3` when you need to run pythong script
 - **MUST NOT** use pip, npm, or any other package manager
 - **MUST** ALWAYS check ide warnings after finish coding
 - Keep files under ~500 LOC

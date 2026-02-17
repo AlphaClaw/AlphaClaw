@@ -48,3 +48,11 @@ class Conversation(Base):
     )
 
     user: Mapped["User"] = relationship(back_populates="conversations")
+
+
+class Brief(Base):
+    __tablename__ = "briefs"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    content: Mapped[str] = mapped_column(String, nullable=False)
+    generated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

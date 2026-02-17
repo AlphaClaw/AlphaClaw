@@ -12,8 +12,6 @@ from alphaclaw.config import settings
 
 log = logging.getLogger(__name__)
 
-_histories: dict[str, list] = {}
-
 
 class TeamsChannel:
     name = "teams"
@@ -45,9 +43,7 @@ class TeamsChannel:
             text = turn_context.activity.text or ""
             user_id = turn_context.activity.from_property.id or ""
 
-            history = _histories.get(user_id, [])
-            reply, history = await agent.run(text, history=history, user_id=user_id)
-            _histories[user_id] = history[-40:]
+            reply, _ = await agent.run(text, user_id=user_id, channel="teams")
 
             await turn_context.send_activity(Activity(type="message", text=reply))
             response_text = reply

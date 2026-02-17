@@ -13,8 +13,6 @@ from alphaclaw.config import settings
 
 log = logging.getLogger(__name__)
 
-_histories: dict[str, list] = {}
-
 
 class SlackChannel:
     name = "slack"
@@ -49,9 +47,7 @@ class SlackChannel:
         if not text or not user_id:
             return
 
-        history = _histories.get(user_id, [])
-        reply, history = await agent.run(text, history=history, user_id=user_id)
-        _histories[user_id] = history[-40:]
+        reply, _ = await agent.run(text, user_id=user_id, channel="slack")
 
         await say(reply)
 

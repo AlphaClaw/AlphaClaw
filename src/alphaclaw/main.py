@@ -13,7 +13,7 @@ from alphaclaw.channels.discord_ import DiscordChannel
 from alphaclaw.channels.slack_ import SlackChannel
 from alphaclaw.channels.telegram import TelegramChannel
 from alphaclaw.channels.teams import TeamsChannel
-from alphaclaw.channels.web import app as web_app
+from alphaclaw.channels.api import app as web_app
 from alphaclaw.config import settings
 from alphaclaw.scheduler.briefs import generate_brief
 

@@ -70,6 +70,7 @@ docker compose up app         # Start app
 - **must** use `uv run python3` when you need to run pythong script
 - **MUST NOT** use pip, npm, or any other package manager
 - **MUST** ALWAYS check ide warnings after finish coding
-- Keep files under ~500 LOC
-- Use async/await throughout
-- Type hints on all function signatures
+- **MUST** Keep files under ~500 LOC or split them into smaller ones
+- **MUST** Use async/await throughout
+- **MUST** Type hints on all function signatures
+- **MUST** check ide warnings after you finish coding every single time

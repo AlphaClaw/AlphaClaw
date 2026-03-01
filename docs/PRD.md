@@ -186,6 +186,98 @@ Features below are ordered by expected value. Not specced yet — will be detail
 
 ---
 
+## Web UI
+
+### Layout: Dashboard + Chat Sidebar
+
+The primary interface is a web dashboard with a collapsible chat sidebar.
+
+```
++-------------------------------------------------+
+|  AlphaClaw        [Search ticker...]    [Chat]  |
++-------------------------------------------------+
+|                              |  Chat Panel      |
+|  ## NVDA Research Report     |                  |
+|  ========================    |  You: Tell me    |
+|  Overview | Financials       |  about their     |
+|  Valuation | Risks           |  debt situation  |
+|  --------------------------  |                  |
+|  [Revenue Growth Chart]      |  Agent: NVDA     |
+|  [Margin Trend Chart]        |  has $9.7B in    |
+|  [Peer Comparison Table]     |  long-term...    |
+|  --------------------------  |                  |
+|  Bull Case | Bear Case       |                  |
+|                              |  [Message...]    |
++-------------------------------------------------+
+```
+
+### Pages
+
+| Page | Purpose |
+|------|---------|
+| **Home / Dashboard** | Search bar, recent reports, watchlist summary |
+| **Research Report** | Full research report for a single company — tabbed sections, charts, tables |
+| **Watchlist** | List of tracked tickers with key metrics, quick actions |
+| **Report History** | Previously generated reports with date and ticker |
+
+### Research Report Page
+
+This is the core page. When the user triggers "Research NVDA", this page renders with:
+
+- **Header**: Ticker, company name, current price, change, market cap
+- **Tabbed sections**: Overview, Financials, Earnings, Valuation, News, Risks, Bull/Bear
+- **Charts** (using Recharts, already installed):
+  - Revenue & earnings growth (bar chart, multi-year)
+  - Margin trends (line chart)
+  - Stock price vs peers (line chart)
+  - EPS beat/miss history (bar chart with positive/negative)
+  - Valuation multiples vs peers (grouped bar chart)
+- **Tables**:
+  - Income statement summary (3-5 years)
+  - Balance sheet highlights
+  - Peer comparison matrix
+  - Recent insider transactions
+  - Recent SEC filings
+
+### Chat Sidebar
+
+- Collapsible panel on the right (~350px wide)
+- Connects to existing WebSocket endpoint (`/ws`)
+- Conversation is contextual to the current report
+- Supports markdown rendering for agent responses
+- Shows typing indicator while agent is working
+- Persists conversation history per report
+
+### Design System
+
+- Already have: Tailwind CSS v4, shadcn/ui (50+ components), Lucide icons, Recharts
+- Style: Clean, data-dense, dark mode preferred (easier on eyes for financial data)
+- Typography: Monospace for numbers/prices, sans-serif for text
+- Color: Green/red for positive/negative changes (standard financial convention)
+
+### API Requirements
+
+The FastAPI backend needs new REST endpoints alongside the existing WebSocket:
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/research/{ticker}` | POST | Trigger research report generation |
+| `/api/research/{ticker}` | GET | Retrieve cached report |
+| `/api/research/history` | GET | List previously generated reports |
+| `/api/watchlist` | GET/POST/DELETE | Manage watchlist |
+| `/api/quote/{ticker}` | GET | Quick quote for display |
+| `/ws` | WebSocket | Chat (already exists) |
+
+### Streaming
+
+Research reports take time to generate (many tool calls + LLM synthesis). The UI should:
+
+- Show a progress indicator with current step ("Fetching financials...", "Analyzing earnings...", "Writing report...")
+- Stream report sections as they become available (not wait for the full report)
+- Use Server-Sent Events (SSE) or WebSocket for progress updates
+
+---
+
 ## Technical Considerations
 
 ### Data Architecture

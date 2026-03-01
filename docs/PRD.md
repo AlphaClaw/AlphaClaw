@@ -304,15 +304,28 @@ Research reports take time to generate (many tool calls + LLM synthesis). The UI
 ### Architecture
 
 ```
+Cloudflare
+  ├── Pages/Workers: web   (React SSR, edge-deployed)  free
+  └── R2: object storage   (S3-compatible)              free
+
 DigitalOcean App Platform
-  ├── Service: api      (Dockerfile, port 8000)  ~$5/mo
-  └── Service: web      (web/Dockerfile, port 3000)  ~$5/mo
+  └── Service: api         (Dockerfile, port 8000)      ~$5/mo
 
 TiDB Serverless (external)
-  └── MySQL-compatible database  (free tier)
+  └── MySQL-compatible database                          free
 ```
 
-Total cost: ~$10/mo + LLM API usage.
+Total cost: ~$5/mo + LLM API usage. Everything else on free tiers.
+
+### Deploy from Day 1
+
+Both services should be deployable from the start:
+
+- **UI**: `web/` deploys to Cloudflare Pages via `wrangler` or GitHub integration
+- **API**: `.do/app.yaml` checked into the repo, push-to-deploy on DO App Platform
+- All config via environment variables (already the case)
+- No local-only assumptions in the codebase
+- `docker compose` for local dev only
 
 ### Database: TiDB Serverless
 
@@ -327,9 +340,48 @@ Total cost: ~$10/mo + LLM API usage.
 | `UUID` (native) | `String(36)` | All primary keys and foreign keys |
 | `asyncpg` driver | `aiomysql` driver | `DATABASE_URL`, dependencies |
 
-### Hosting: DigitalOcean App Platform
+### Object Storage: Cloudflare R2
 
-Two services deployed from a single GitHub repo, push-to-deploy on `main`.
+**Why R2**: S3-compatible, generous free tier (10GB storage, no egress fees), no surprises on the bill.
+
+**Used for**:
+
+| Bucket / Prefix | Purpose |
+|---|---|
+| `filings/` | Downloaded SEC filings (10-K, 10-Q, 8-K PDFs/HTML) |
+| `reports/` | Generated research reports (structured JSON + rendered HTML/PDF) |
+| `cache/` | Cached financial data snapshots (reduce yfinance calls) |
+| `news/` | Scraped news articles and RSS content |
+
+**Integration**: Use `boto3` (or `aioboto3` for async) with R2's S3-compatible endpoint. Config via environment variables:
+
+| Variable | Purpose |
+|---|---|
+| `R2_ACCOUNT_ID` | Cloudflare account ID |
+| `R2_ACCESS_KEY_ID` | R2 API token access key |
+| `R2_SECRET_ACCESS_KEY` | R2 API token secret key |
+| `R2_BUCKET_NAME` | Bucket name (e.g., `alphaclaw`) |
+
+### UI Hosting: Cloudflare Pages/Workers
+
+TanStack Start uses Vinxi/Nitro, which has a Cloudflare preset for SSR on Workers.
+
+**Why Cloudflare Pages**: Free tier (unlimited static bandwidth, 100K worker invocations/day), edge-deployed globally, instant deploys, custom domains with free TLS.
+
+**Deploy**: Connect GitHub repo → set build directory to `web/` → auto-deploy on push.
+
+**Config**:
+
+| Setting | Value |
+|---|---|
+| Build command | `npm run build` |
+| Build output | `dist/` |
+| Root directory | `web/` |
+| Environment variable | `VITE_API_URL` = API server URL |
+
+### API Hosting: DigitalOcean App Platform
+
+Single service, push-to-deploy on `main`.
 
 **App Spec** (`.do/app.yaml`):
 
@@ -346,9 +398,6 @@ services:
     http_port: 8000
     instance_size_slug: basic-xxs
     instance_count: 1
-    routes:
-      - path: /api
-      - path: /ws
     envs:
       - key: DATABASE_URL
         value: "mysql+aiomysql://user:pass@gateway.tidbcloud.com:4000/alphaclaw"
@@ -357,22 +406,14 @@ services:
         type: SECRET
       - key: ALPHACLAW_MODEL
         value: "anthropic:claude-sonnet-4-5-20250929"
-
-  - name: web
-    github:
-      repo: your-username/AlphaClaw
-      branch: main
-      deploy_on_push: true
-    dockerfile_path: web/Dockerfile
-    source_dir: web
-    http_port: 3000
-    instance_size_slug: basic-xxs
-    instance_count: 1
-    routes:
-      - path: /
-    envs:
-      - key: VITE_API_URL
-        value: "${api.PUBLIC_URL}"
+      - key: R2_ACCOUNT_ID
+        type: SECRET
+      - key: R2_ACCESS_KEY_ID
+        type: SECRET
+      - key: R2_SECRET_ACCESS_KEY
+        type: SECRET
+      - key: R2_BUCKET_NAME
+        value: "alphaclaw"
 ```
 
 ### Local Development

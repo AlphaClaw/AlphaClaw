@@ -299,6 +299,100 @@ Research reports take time to generate (many tool calls + LLM synthesis). The UI
 
 ---
 
+## Deployment
+
+### Architecture
+
+```
+DigitalOcean App Platform
+  ├── Service: api      (Dockerfile, port 8000)  ~$5/mo
+  └── Service: web      (web/Dockerfile, port 3000)  ~$5/mo
+
+TiDB Serverless (external)
+  └── MySQL-compatible database  (free tier)
+```
+
+Total cost: ~$10/mo + LLM API usage.
+
+### Database: TiDB Serverless
+
+**Why TiDB**: Very generous free tier (25GB storage, 50M request units/month). MySQL-compatible, fully managed, no server to maintain.
+
+**Migration from PostgreSQL**: The codebase currently uses PostgreSQL-specific types. Changes required:
+
+| Current (PostgreSQL) | Target (MySQL/TiDB) | Affected |
+|---|---|---|
+| `JSONB` | `JSON` | `User.preferences`, `Conversation.messages` |
+| `ARRAY(String)` | `JSON` (as array) | `Watchlist.tickers` |
+| `UUID` (native) | `String(36)` | All primary keys and foreign keys |
+| `asyncpg` driver | `aiomysql` driver | `DATABASE_URL`, dependencies |
+
+### Hosting: DigitalOcean App Platform
+
+Two services deployed from a single GitHub repo, push-to-deploy on `main`.
+
+**App Spec** (`.do/app.yaml`):
+
+```yaml
+name: alphaclaw
+
+services:
+  - name: api
+    github:
+      repo: your-username/AlphaClaw
+      branch: main
+      deploy_on_push: true
+    dockerfile_path: Dockerfile
+    http_port: 8000
+    instance_size_slug: basic-xxs
+    instance_count: 1
+    routes:
+      - path: /api
+      - path: /ws
+    envs:
+      - key: DATABASE_URL
+        value: "mysql+aiomysql://user:pass@gateway.tidbcloud.com:4000/alphaclaw"
+        type: SECRET
+      - key: ANTHROPIC_API_KEY
+        type: SECRET
+      - key: ALPHACLAW_MODEL
+        value: "anthropic:claude-sonnet-4-5-20250929"
+
+  - name: web
+    github:
+      repo: your-username/AlphaClaw
+      branch: main
+      deploy_on_push: true
+    dockerfile_path: web/Dockerfile
+    source_dir: web
+    http_port: 3000
+    instance_size_slug: basic-xxs
+    instance_count: 1
+    routes:
+      - path: /
+    envs:
+      - key: VITE_API_URL
+        value: "${api.PUBLIC_URL}"
+```
+
+### Local Development
+
+Docker Compose remains for local dev with a local MySQL container (replacing the current PostgreSQL):
+
+```bash
+docker compose up -d db    # Local MySQL
+docker compose up app web  # App + frontend
+```
+
+### What Stays the Same
+
+- `compose.yml` for local development (swap postgres image for mysql)
+- Alembic for migrations (works with MySQL via SQLAlchemy)
+- All application code, agent tools, channel adapters unchanged
+- `.env` file for local config
+
+---
+
 ## Non-Goals (For Now)
 
 - **Trade execution** — AlphaClaw does not place trades

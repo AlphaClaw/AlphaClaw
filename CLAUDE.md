@@ -88,9 +88,12 @@ Web UI: `cd web && npm run dev` (local) or deployed to CF Workers/Pages.
 
 - **MUST** use `uv` for all package management
 - **must** use `uv run python3` when you need to run pythong script
-- **MUST NOT** use pip, npm, or any other package manager
 - **MUST** ALWAYS check ide warnings after finish coding
 - **MUST** Keep files under ~500 LOC or split them into smaller ones
-- **MUST** Use async/await throughout
 - **MUST** Type hints on all function signatures
-- **MUST** check ide warnings after you finish coding every single time
+- **MUST** ALWAYS check ide warnings after you finish coding every single time
+- **MUST NOT** DEPLOY the project
+- **MUST NOT** USE perl
+- **MUST NOT** Use psql because I do not have it on my macBook
+- **MUST** FIX all issues you find, no matter whether they are because of your changes
+- **MUST** use both `-B` (before) and `-A` (after) context when grepping in structured files (YAML, JSON, etc.) to avoid grabbing fields from adjacent entries

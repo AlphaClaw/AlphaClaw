@@ -9,7 +9,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - db-data:/var/lib/mysql
+      - ./.data/mysql:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-ualphaclaw", "-palphaclaw"]
       interval: 5s
@@ -27,6 +27,3 @@ services:
     ports:
       - "8000:8000"
 
-
-volumes:
-  db-data:

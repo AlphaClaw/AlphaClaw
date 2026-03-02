@@ -18,6 +18,7 @@ build/
 
 # Database
 *.db
+.data/
 data/postgres/
 data/files/
 

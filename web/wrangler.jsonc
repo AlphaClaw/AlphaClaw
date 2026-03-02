@@ -1,0 +1,33 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "alphaclaw-web",
+  "compatibility_date": "2025-04-01",
+
+  // CF Container: Python FastAPI backend
+  "containers": [
+    {
+      "class_name": "AlphaClawContainer",
+      "image": "./../Dockerfile",
+      "max_instances": 1
+    }
+  ],
+
+  // Durable Object binding for the container
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "ALPHACLAW_CONTAINER",
+        "class_name": "AlphaClawContainer"
+      }
+    ]
+  },
+
+  "migrations": [
+    { "tag": "v1", "new_classes": ["AlphaClawContainer"] }
+  ],
+
+  // Keep-alive cron: pings /health every 5 min so chat bots stay connected
+  "triggers": {
+    "crons": ["*/5 * * * *"]
+  }
+}

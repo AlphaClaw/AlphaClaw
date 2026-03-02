@@ -301,50 +301,59 @@ Research reports take time to generate (many tool calls + LLM synthesis). The UI
 
 ## Deployment
 
-### Architecture
+### Architecture — All Cloudflare
 
 ```
-Cloudflare
-  ├── Pages/Workers: web   (React SSR, edge-deployed)  free
-  └── R2: object storage   (S3-compatible)              free
-
-DigitalOcean App Platform
-  └── Service: api         (Dockerfile, port 8000)      ~$5/mo
-
-TiDB Serverless (external)
-  └── MySQL-compatible database                          free
+CF Workers/Pages (web: TanStack Start SSR + API routes)
+  ↓ (container binding)
+CF Container (Python: FastAPI + chat channels + scheduler)
+  ↓
+Cloud MySQL (DATABASE_URL — provider-agnostic)
+CF R2 (S3-compatible object storage via aioboto3)
+External APIs (yfinance, Polygon, SEC EDGAR, Anthropic)
 ```
 
-Total cost: ~$5/mo + LLM API usage. Everything else on free tiers.
+Everything runs on Cloudflare. The web app (TanStack Start on CF Workers) holds a
+container binding to the Python backend and proxies API/WebSocket requests. A cron
+trigger pings `/health` every 5 minutes to keep the container warm for chat bots.
 
-### Deploy from Day 1
+Total cost: CF free tiers + cloud MySQL + LLM API usage.
 
-Both services should be deployable from the start:
+### How It Works
 
-- **UI**: `web/` deploys to Cloudflare Pages via `wrangler` or GitHub integration
-- **API**: `.do/app.yaml` checked into the repo, push-to-deploy on DO App Platform
-- All config via environment variables (already the case)
-- No local-only assumptions in the codebase
-- `docker compose` for local dev only
+- **Web + API gateway**: `web/` deploys to CF Workers/Pages. The `wrangler.jsonc` defines a
+  `containers` binding that builds the Python `Dockerfile` as a CF Container. SSR API routes
+  proxy requests to the container.
+- **Python backend**: Same FastAPI app, same Dockerfile. Runs as a CF Container (max 1 instance)
+  with 2h sleep timeout. Handles chat channels (Telegram, Discord, Slack, Teams), scheduler,
+  and all LLM/data tool calls.
+- **Keep-alive**: Cron trigger every 5 min pings `/health` to prevent container sleep while
+  chat bots need persistent connections.
 
-### Database: TiDB Serverless
+### Deploy
 
-**Why TiDB**: Very generous free tier (25GB storage, 50M request units/month). MySQL-compatible, fully managed, no server to maintain.
+```bash
+# Deploy everything (web + container) from web/
+cd web && npx wrangler deploy
 
-**Migration from PostgreSQL**: The codebase currently uses PostgreSQL-specific types. Changes required:
+# Set secrets
+npx wrangler secret put DATABASE_URL
+npx wrangler secret put ANTHROPIC_API_KEY
+npx wrangler secret put ALPHACLAW_R2_ACCOUNT_ID
+npx wrangler secret put ALPHACLAW_R2_ACCESS_KEY_ID
+npx wrangler secret put ALPHACLAW_R2_SECRET_ACCESS_KEY
+```
 
-| Current (PostgreSQL) | Target (MySQL/TiDB) | Affected |
-|---|---|---|
-| `JSONB` | `JSON` | `User.preferences`, `Conversation.messages` |
-| `ARRAY(String)` | `JSON` (as array) | `Watchlist.tickers` |
-| `UUID` (native) | `String(36)` | All primary keys and foreign keys |
-| `asyncpg` driver | `aiomysql` driver | `DATABASE_URL`, dependencies |
+CI/CD: `.github/workflows/deploy.yml` runs Python tests then deploys on push to `main`.
+
+### Database: Cloud MySQL
+
+Provider-agnostic — just a `DATABASE_URL`. Options: TiDB Serverless (free tier), PlanetScale,
+or any managed MySQL. The app uses `aiomysql` + SQLAlchemy async.
 
 ### Object Storage: Cloudflare R2
 
-**Why R2**: S3-compatible, generous free tier (10GB storage, no egress fees), no surprises on the bill.
-
-**Used for**:
+S3-compatible, generous free tier (10GB storage, no egress fees). Accessed via `aioboto3`.
 
 | Bucket / Prefix | Purpose |
 |---|---|
@@ -353,84 +362,15 @@ Both services should be deployable from the start:
 | `cache/` | Cached financial data snapshots (reduce yfinance calls) |
 | `news/` | Scraped news articles and RSS content |
 
-**Integration**: Use `boto3` (or `aioboto3` for async) with R2's S3-compatible endpoint. Config via environment variables:
-
-| Variable | Purpose |
-|---|---|
-| `R2_ACCOUNT_ID` | Cloudflare account ID |
-| `R2_ACCESS_KEY_ID` | R2 API token access key |
-| `R2_SECRET_ACCESS_KEY` | R2 API token secret key |
-| `R2_BUCKET_NAME` | Bucket name (e.g., `alphaclaw`) |
-
-### UI Hosting: Cloudflare Pages/Workers
-
-TanStack Start uses Vinxi/Nitro, which has a Cloudflare preset for SSR on Workers.
-
-**Why Cloudflare Pages**: Free tier (unlimited static bandwidth, 100K worker invocations/day), edge-deployed globally, instant deploys, custom domains with free TLS.
-
-**Deploy**: Connect GitHub repo → set build directory to `web/` → auto-deploy on push.
-
-**Config**:
-
-| Setting | Value |
-|---|---|
-| Build command | `npm run build` |
-| Build output | `dist/` |
-| Root directory | `web/` |
-| Environment variable | `VITE_API_URL` = API server URL |
-
-### API Hosting: DigitalOcean App Platform
-
-Single service, push-to-deploy on `main`.
-
-**App Spec** (`.do/app.yaml`):
-
-```yaml
-name: alphaclaw
-
-services:
-  - name: api
-    github:
-      repo: your-username/AlphaClaw
-      branch: main
-      deploy_on_push: true
-    dockerfile_path: Dockerfile
-    http_port: 8000
-    instance_size_slug: basic-xxs
-    instance_count: 1
-    envs:
-      - key: DATABASE_URL
-        value: "mysql+aiomysql://user:pass@gateway.tidbcloud.com:4000/alphaclaw"
-        type: SECRET
-      - key: ANTHROPIC_API_KEY
-        type: SECRET
-      - key: ALPHACLAW_MODEL
-        value: "anthropic:claude-sonnet-4-5-20250929"
-      - key: R2_ACCOUNT_ID
-        type: SECRET
-      - key: R2_ACCESS_KEY_ID
-        type: SECRET
-      - key: R2_SECRET_ACCESS_KEY
-        type: SECRET
-      - key: R2_BUCKET_NAME
-        value: "alphaclaw"
-```
+Config: `ALPHACLAW_R2_ACCOUNT_ID`, `ALPHACLAW_R2_ACCESS_KEY_ID`, `ALPHACLAW_R2_SECRET_ACCESS_KEY`, `ALPHACLAW_R2_BUCKET_NAME`
 
 ### Local Development
 
-Docker Compose remains for local dev with a local MySQL container (replacing the current PostgreSQL):
-
 ```bash
-docker compose up -d db    # Local MySQL
-docker compose up app web  # App + frontend
+docker compose -f compose.development.yml up -d db    # Local MySQL
+uv run alphaclaw                                        # Run Python backend
+cd web && npm run dev                                   # Run web frontend
 ```
-
-### What Stays the Same
-
-- `compose.yml` for local development (swap postgres image for mysql)
-- Alembic for migrations (works with MySQL via SQLAlchemy)
-- All application code, agent tools, channel adapters unchanged
-- `.env` file for local config
 
 ---
 

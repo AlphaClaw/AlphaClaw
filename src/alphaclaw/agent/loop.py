@@ -13,12 +13,21 @@ from alphaclaw.data.polygon import PolygonProvider
 from alphaclaw.data.sec import SECProvider
 from alphaclaw.data.yfinance import YFinanceProvider
 from alphaclaw.storage.db import async_session
+from alphaclaw.storage.r2 import R2Client
 from alphaclaw.storage.repo import Repository
 
 log = logging.getLogger(__name__)
 
 _market = PolygonProvider() if settings.polygon_api_key else YFinanceProvider()
 _sec = SECProvider()
+_r2: R2Client | None = None
+if settings.r2_account_id:
+    _r2 = R2Client(
+        account_id=settings.r2_account_id,
+        access_key_id=settings.r2_access_key_id,
+        secret_access_key=settings.r2_secret_access_key,
+        bucket_name=settings.r2_bucket_name,
+    )
 
 _MAX_HISTORY = 40
 
@@ -41,6 +50,7 @@ async def run(
             sec=_sec,
             channel=channel,
             repo=repo,
+            r2=_r2,
         )
 
         # Load history from DB if not provided and user is known

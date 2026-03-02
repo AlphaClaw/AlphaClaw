@@ -11,6 +11,7 @@ from alphaclaw.agent.prompts import SYSTEM_PROMPT
 from alphaclaw.data.base import DataProvider
 
 if TYPE_CHECKING:
+    from alphaclaw.storage.r2 import R2Client
     from alphaclaw.storage.repo import Repository
 
 
@@ -25,6 +26,7 @@ class Deps:
     sec: SECProviderProtocol
     channel: str = "web"
     repo: Repository | None = None
+    r2: R2Client | None = None
 
 
 # Model is not set here to avoid API key validation at import time.

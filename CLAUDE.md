@@ -57,6 +57,21 @@ Key variables:
 - `TELEGRAM_BOT_TOKEN`, `DISCORD_BOT_TOKEN`, `SLACK_BOT_TOKEN` — channel tokens
 - `POLYGON_API_KEY` — premium data (optional, falls back to yfinance)
 
+## Deployment (Cloudflare)
+
+All-Cloudflare stack: CF Workers/Pages (web SSR) → CF Container (Python backend) → Cloud MySQL + R2.
+
+```bash
+# Deploy web + container (from web/)
+cd web && npx wrangler deploy
+
+# Set secrets
+npx wrangler secret put DATABASE_URL
+npx wrangler secret put ANTHROPIC_API_KEY
+```
+
+CI/CD: `.github/workflows/deploy.yml` — runs `uv run pytest`, then deploys on push to `main`.
+
 ## Docker (Local Development)
 
 ```bash
@@ -67,7 +82,7 @@ docker compose -f compose.development.yml up -d db
 docker compose -f compose.development.yml up -d
 ```
 
-Web UI is deployed separately to Cloudflare Workers (not in compose).
+Web UI: `cd web && npm run dev` (local) or deployed to CF Workers/Pages.
 
 ## Rules
 

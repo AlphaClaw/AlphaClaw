@@ -12,5 +12,7 @@ RUN uv sync --frozen --no-dev --no-install-project
 COPY . .
 RUN uv sync --frozen --no-dev
 
+EXPOSE 8000
+
 # Run migrations then start
 CMD ["sh", "-c", "uv run alembic upgrade head && uv run alphaclaw"]

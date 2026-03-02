@@ -35,6 +35,17 @@ class Settings(BaseSettings):
             return f"{prefix}:{rest}"
         return m
 
+    # Cloudflare R2 (S3-compatible object storage)
+    r2_account_id: str = ""
+    r2_access_key_id: str = ""
+    r2_secret_access_key: str = ""
+    r2_bucket_name: str = "alphaclaw"
+
+    @property
+    def r2_endpoint_url(self) -> str:
+        """S3-compatible endpoint for Cloudflare R2."""
+        return f"https://{self.r2_account_id}.r2.cloudflarestorage.com"
+
     # Financial data
     polygon_api_key: str = ""
 

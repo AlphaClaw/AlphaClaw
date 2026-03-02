@@ -11,9 +11,23 @@ uv sync
 # Set up environment
 cp .env.example .env
 # Edit .env with your API keys
+```
 
-# Start PostgreSQL
-docker compose up -d db
+## Local Development
+
+### Option A: Run everything in Docker
+
+```bash
+docker compose -f compose.development.yml up -d
+```
+
+This starts MySQL 8.4 and the app with hot-reload (source mounted as volumes). Migrations run automatically on startup.
+
+### Option B: Run app locally (recommended for development)
+
+```bash
+# Start MySQL only
+docker compose -f compose.development.yml up -d db
 
 # Run migrations
 uv run alembic upgrade head
@@ -22,7 +36,7 @@ uv run alembic upgrade head
 uv run alphaclaw
 ```
 
-Open http://localhost:8000 to chat via the web interface.
+The API is available at http://localhost:8000. Web UI is deployed separately to Cloudflare Workers.
 
 ## Features
 

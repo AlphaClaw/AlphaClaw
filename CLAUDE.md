@@ -30,7 +30,7 @@ src/alphaclaw/
   agent/           — PydanticAI agent, tool definitions, system prompts
   channels/        — Channel adapters (web, telegram, discord, slack, teams)
   data/            — Data providers (yfinance, polygon, sec)
-  storage/         — PostgreSQL models and repository
+  storage/         — MySQL models and repository
   scheduler/       — Daily market brief pipeline
 ```
 
@@ -53,16 +53,21 @@ All config via environment variables (or `.env` file). See `.env.example`.
 Key variables:
 
 - `ALPHACLAW_MODEL` — PydanticAI model string (default: `anthropic/claude-sonnet-4-5-20250929`, slash auto-converted to colon)
-- `DATABASE_URL` — PostgreSQL connection string
+- `DATABASE_URL` — MySQL connection string (e.g. `mysql+aiomysql://alphaclaw:alphaclaw@localhost:3306/alphaclaw`)
 - `TELEGRAM_BOT_TOKEN`, `DISCORD_BOT_TOKEN`, `SLACK_BOT_TOKEN` — channel tokens
 - `POLYGON_API_KEY` — premium data (optional, falls back to yfinance)
 
-## Docker
+## Docker (Local Development)
 
 ```bash
-docker compose up -d db      # Start PostgreSQL
-docker compose up app         # Start app
+# Start MySQL only (run app locally with uv)
+docker compose -f compose.development.yml up -d db
+
+# Start MySQL + app (with hot-reload volume mounts)
+docker compose -f compose.development.yml up -d
 ```
+
+Web UI is deployed separately to Cloudflare Workers (not in compose).
 
 ## Rules
 

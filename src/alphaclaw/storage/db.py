@@ -4,8 +4,10 @@ from alphaclaw.config import settings
 
 
 def _async_url(url: str) -> str:
-    """Ensure the URL uses the asyncpg driver."""
-    return url.replace("postgresql://", "postgresql+asyncpg://", 1)
+    """Ensure the URL uses the aiomysql async driver."""
+    if "+aiomysql" in url:
+        return url
+    return url.replace("mysql://", "mysql+aiomysql://", 1)
 
 
 engine = create_async_engine(_async_url(settings.database_url), echo=False)

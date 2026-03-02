@@ -10,7 +10,7 @@ class Settings(BaseSettings):
 
     # Database (reads DATABASE_URL, not ALPHACLAW_DATABASE_URL)
     database_url: str = Field(
-        default="postgresql://alphaclaw:alphaclaw@localhost:5432/alphaclaw",
+        default="mysql+aiomysql://alphaclaw:alphaclaw@localhost:3306/alphaclaw",
         validation_alias="DATABASE_URL",
     )
 
